@@ -10,7 +10,7 @@ Implemente las curvas cúbicas naturales, de Hermite, Catmull-Rom y Bezier (cúb
 
 *Sugerencia:* Como las curvas de Hermite y cúbica de Bezier requieren dos secciones, reacomode los puntos de control para que su continuidad sea C<sup>1</sup>. Ver [acá](https://visualcomputing.github.io/Curves/#/5/5) y [propiedad 4 de acá](https://visualcomputing.github.io/Curves/#/6/4).
 
-Fecha límite Domingo 19/3/17, a las 24h.
+Fecha límite Martes 21/3/17, a las 24h.
 
 ## Ideas para profundización
 
