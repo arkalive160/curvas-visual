@@ -22,4 +22,4 @@ Completar la presentación para:
 
 ## Observación
 
-Si se va a emplear código de terceros, favor no olvidar atribuirlo apropiadamente.
+Favor no olvidar completar la información requerida para cada curva, de acuerdo a las indicaciones del sketch.
