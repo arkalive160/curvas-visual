@@ -4,7 +4,7 @@
 int mode;
 
 /*
- Completar la información para curva implementada
+ Completar la información para cada curva implementada
  
  Curva 1: <nombre>
  Implementado desde cero, adaptado o transcripción literal: Transcripción literal
