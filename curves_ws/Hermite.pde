@@ -10,30 +10,46 @@ float t = 0;
       this.cPoints = cPoints;
   }
 
-  PVector calculateHermitePoint(float t,ControlPoint p0,ControlPoint p1, TangentPoint m0, TangentPoint m1){
+  PVector calculateHermitePoint(float t,PVector p0, PVector p1, PVector m0, PVector m1){
       float u = 1 - t;
 
-      PVector firstTerm = PVector.mult( p0.position, 2*pow(t,3) - 3*pow(t,2) + 1);
-      PVector secondTerm = firstTerm.add(PVector.mult( p1.position, -2*pow(t,3) + 3*pow(t,2) ));
-      PVector thirdTerm = secondTerm.add(PVector.mult( m0.position, pow(t,3) - 2*pow(t,2) + t ));
-      PVector fourthTerm = thirdTerm.add(PVector.mult( m1.position, pow(t,3) - pow(t,2) ));
+      PVector firstTerm = PVector.mult( p0, 2*pow(t,3) - 3*pow(t,2) + 1);
+      PVector secondTerm = firstTerm.add(PVector.mult( p1, -2*pow(t,3) + 3*pow(t,2) ));
+      PVector thirdTerm = secondTerm.add(PVector.mult( m0, pow(t,3) - 2*pow(t,2) + t ));
+      PVector fourthTerm = thirdTerm.add(PVector.mult( m1, pow(t,3) - pow(t,2) ));
       return fourthTerm;
 
   }
 
   void drawHermiteCurve(){
-    //middlePoint();
-    PVector q0 = calculateHermitePoint(0,  cPoints.get(0), cPoints.get(1), tPoints.get(0), tPoints.get(1));
-    int i;
-    for(i = 0; i <= SEGMENT_COUNT; i++ ){
-      float t = i / (float) SEGMENT_COUNT;
-      PVector q1 = calculateHermitePoint(t, cPoints.get(0), cPoints.get(1), tPoints.get(0), tPoints.get(1));
-      stroke(0);
-      strokeWeight(4);
-      line(q0.x, q0.y, q1.x, q1.y);
-      q0=q1;
 
+
+
+    for(int i=0; i < cPoints.size() -1; i++){
+
+      PVector current = cPoints.get(i).position;
+      PVector next = cPoints.get(i+1).position;
+      PVector tangent_current = PVector.sub(tPoints.get(i).position, current );
+      PVector tangent_next = PVector.sub(tPoints.get(i+1).position, next );
+
+        PVector q0 = calculateHermitePoint(0, current, next, tangent_current, tangent_next);
+        int stepts;
+        for(stepts = 0; stepts<= SEGMENT_COUNT; stepts++ ){
+          float t = stepts / (float) SEGMENT_COUNT;
+          PVector q1 = calculateHermitePoint(t, current, next,  tangent_current, tangent_next);
+          stroke(0);
+          strokeWeight(4);
+          line(q0.x, q0.y, q1.x, q1.y);
+          q0=q1;
+
+        }
     }
+
+
+  }
+
+  PVector tangentVector(PVector control, PVector tangent){
+    return control.add( tangent.mult(-1) );
   }
 
 

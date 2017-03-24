@@ -57,6 +57,7 @@ class ControlPolygon {
 class TangentPoint {
   float radiusX = 10, radiusY = 10;
   PVector position;
+  PVector tangent;
 
   TangentPoint() {
     position = new PVector(random(radiusX, width-radiusX), random(radiusY, height-radiusY));
@@ -87,9 +88,11 @@ class ControlTangent {
 
     tPoints = new ArrayList<TangentPoint>();
     cPoints = points;
-
     for (int i=0; i< points.size(); i++){
       tPoints.add(new TangentPoint());
+      ControlPoint control_current = cPoints.get(i);
+      TangentPoint tanget_current = tPoints.get(i);
+
     }
 
 
@@ -97,12 +100,13 @@ class ControlTangent {
 
   void draw() {
     pushStyle();
-
     for (int i=0; i< tPoints.size(); i++){
       ControlPoint control_current = cPoints.get(i);
       TangentPoint tanget_current = tPoints.get(i);
       tanget_current.draw();
       fill(255,0,0);
+
+      stroke(255, 153, 250);
       line(control_current.position.x,control_current.position.y,tanget_current.position.x,tanget_current.position.y);
 
     }

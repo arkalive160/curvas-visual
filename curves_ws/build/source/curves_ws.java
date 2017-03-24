@@ -37,7 +37,7 @@ boolean drawGrid = true, drawCtrl = true;
 public void setup() {
   
   textSize(20);
-  poly = new ControlPolygon(2);
+  poly = new ControlPolygon(6);
   tangents = new ControlTangent(poly.points);
 
   
@@ -321,6 +321,7 @@ class ControlPolygon {
 class TangentPoint {
   float radiusX = 10, radiusY = 10;
   PVector position;
+  PVector tangent;
 
   TangentPoint() {
     position = new PVector(random(radiusX, width-radiusX), random(radiusY, height-radiusY));
@@ -351,9 +352,11 @@ class ControlTangent {
 
     tPoints = new ArrayList<TangentPoint>();
     cPoints = points;
-
     for (int i=0; i< points.size(); i++){
       tPoints.add(new TangentPoint());
+      ControlPoint control_current = cPoints.get(i);
+      TangentPoint tanget_current = tPoints.get(i);
+
     }
 
 
@@ -361,12 +364,13 @@ class ControlTangent {
 
   public void draw() {
     pushStyle();
-
     for (int i=0; i< tPoints.size(); i++){
       ControlPoint control_current = cPoints.get(i);
       TangentPoint tanget_current = tPoints.get(i);
       tanget_current.draw();
       fill(255,0,0);
+
+      stroke(255, 153, 250);
       line(control_current.position.x,control_current.position.y,tanget_current.position.x,tanget_current.position.y);
 
     }
@@ -386,32 +390,202 @@ float t = 0;
       this.cPoints = cPoints;
   }
 
-  public PVector calculateHermitePoint(float t,ControlPoint p0,ControlPoint p1, TangentPoint m0, TangentPoint m1){
+  public PVector calculateHermitePoint(float t,PVector p0, PVector p1, PVector m0, PVector m1){
       float u = 1 - t;
 
-      PVector firstTerm = PVector.mult( p0.position, 2*pow(t,3) - 3*pow(t,2) + 1);
-      PVector secondTerm = firstTerm.add(PVector.mult( p1.position, -2*pow(t,3) + 3*pow(t,2) ));
-      PVector thirdTerm = secondTerm.add(PVector.mult( m0.position, pow(t,3) - 2*pow(t,2) + t ));
-      PVector fourthTerm = thirdTerm.add(PVector.mult( m1.position, pow(t,3) - pow(t,2) ));
+      PVector firstTerm = PVector.mult( p0, 2*pow(t,3) - 3*pow(t,2) + 1);
+      PVector secondTerm = firstTerm.add(PVector.mult( p1, -2*pow(t,3) + 3*pow(t,2) ));
+      PVector thirdTerm = secondTerm.add(PVector.mult( m0, pow(t,3) - 2*pow(t,2) + t ));
+      PVector fourthTerm = thirdTerm.add(PVector.mult( m1, pow(t,3) - pow(t,2) ));
       return fourthTerm;
 
   }
 
   public void drawHermiteCurve(){
-    //middlePoint();
-    PVector q0 = calculateHermitePoint(0,  cPoints.get(0), cPoints.get(1), tPoints.get(0), tPoints.get(1));
-    int i;
-    for(i = 0; i <= SEGMENT_COUNT; i++ ){
-      float t = i / (float) SEGMENT_COUNT;
-      PVector q1 = calculateHermitePoint(t, cPoints.get(0), cPoints.get(1), tPoints.get(0), tPoints.get(1));
-      stroke(0);
-      strokeWeight(4);
-      line(q0.x, q0.y, q1.x, q1.y);
-      q0=q1;
 
+
+
+    for(int i=0; i < cPoints.size() -1; i++){
+
+      PVector current = cPoints.get(i).position;
+      PVector next = cPoints.get(i+1).position;
+      PVector tangent_current = PVector.sub(tPoints.get(i).position, current );
+      PVector tangent_next = PVector.sub(tPoints.get(i+1).position, next );
+
+        PVector q0 = calculateHermitePoint(0, current, next, tangent_current, tangent_next);
+        int stepts;
+        for(stepts = 0; stepts<= SEGMENT_COUNT; stepts++ ){
+          float t = stepts / (float) SEGMENT_COUNT;
+          PVector q1 = calculateHermitePoint(t, current, next,  tangent_current, tangent_next);
+          stroke(0);
+          strokeWeight(4);
+          line(q0.x, q0.y, q1.x, q1.y);
+          q0=q1;
+
+        }
     }
+
+
   }
 
+  public PVector tangentVector(PVector control, PVector tangent){
+    return control.add( tangent.mult(-1) );
+  }
+
+
+}
+/*
+Codigo original tomado de : http://introcs.cs.princeton.edu/java/95linear/Matrix.java.html
+Copyright \u00a9 2000\u20132011, Robert Sedgewick and Kevin Wayne. 
+Last updated: Tue Aug 30 09:58:33 EDT 2016.
+*/
+
+
+/******************************************************************************
+ *  Compilation:  javac Matrix.java
+ *  Execution:    java Matrix
+ *
+ *  A bare-bones immutable data type for M-by-N matrices.
+ *
+ ******************************************************************************/
+ 
+class Matrix {
+  
+    int M;             // number of rows
+    int N;             // number of columns
+    float[][] data;   // M-by-N array
+
+
+
+    // create M-by-N matrix of 0's
+    public Matrix(int M, int N) {
+        this.M = M;
+        this.N = N;
+        data = new float[M][N];
+    }
+
+    // create matrix based on 2d array
+    public Matrix(float[][] data) {
+        M = data.length;
+        N = data[0].length;
+        this.data = new float[M][N];
+        for (int i = 0; i < M; i++)
+            for (int j = 0; j < N; j++)
+                    this.data[i][j] = data[i][j];
+    }
+
+    // copy constructor
+    private Matrix(Matrix A) { this(A.data); }
+
+    // swap rows i and j
+    private void swap(int i, int j) {
+        float[] temp = data[i];
+        data[i] = data[j];
+        data[j] = temp;
+    }
+
+    // create and return the transpose of the invoking matrix
+    public Matrix transpose() {
+        Matrix A = new Matrix(N, M);
+        for (int i = 0; i < M; i++)
+            for (int j = 0; j < N; j++)
+                A.data[j][i] = this.data[i][j];
+        return A;
+    }
+
+    // return C = A + B
+    public Matrix plus(Matrix B) {
+        Matrix A = this;
+        if (B.M != A.M || B.N != A.N) throw new RuntimeException("Illegal matrix dimensions.");
+        Matrix C = new Matrix(M, N);
+        for (int i = 0; i < M; i++)
+            for (int j = 0; j < N; j++)
+                C.data[i][j] = A.data[i][j] + B.data[i][j];
+        return C;
+    }
+
+
+    // return C = A - B
+    public Matrix minus(Matrix B) {
+        Matrix A = this;
+        if (B.M != A.M || B.N != A.N) throw new RuntimeException("Illegal matrix dimensions.");
+        Matrix C = new Matrix(M, N);
+        for (int i = 0; i < M; i++)
+            for (int j = 0; j < N; j++)
+                C.data[i][j] = A.data[i][j] - B.data[i][j];
+        return C;
+    }
+
+    // does A = B exactly?
+    public boolean eq(Matrix B) {
+        Matrix A = this;
+        if (B.M != A.M || B.N != A.N) throw new RuntimeException("Illegal matrix dimensions.");
+        for (int i = 0; i < M; i++)
+            for (int j = 0; j < N; j++)
+                if (A.data[i][j] != B.data[i][j]) return false;
+        return true;
+    }
+
+    // return C = A * B
+    public Matrix times(Matrix B) {
+        Matrix A = this;
+        if (A.N != B.M) throw new RuntimeException("Illegal matrix dimensions.");
+        Matrix C = new Matrix(A.M, B.N);
+        for (int i = 0; i < C.M; i++)
+            for (int j = 0; j < C.N; j++)
+                for (int k = 0; k < A.N; k++)
+                    C.data[i][j] += (A.data[i][k] * B.data[k][j]);
+        return C;
+    }
+
+
+    // return x = A^-1 b, assuming A is square and has full rank
+    public Matrix solve(Matrix rhs) {
+        if (M != N || rhs.M != N || rhs.N != 1)
+            throw new RuntimeException("Illegal matrix dimensions.");
+
+        // create copies of the data
+        Matrix A = new Matrix(this);
+        Matrix b = new Matrix(rhs);
+
+        // Gaussian elimination with partial pivoting
+        for (int i = 0; i < N; i++) {
+
+            // find pivot row and swap
+            int max = i;
+            for (int j = i + 1; j < N; j++)
+                if (Math.abs(A.data[j][i]) > Math.abs(A.data[max][i]))
+                    max = j;
+            A.swap(i, max);
+            b.swap(i, max);
+
+            // singular
+            if (A.data[i][i] == 0.0f) throw new RuntimeException("Matrix is singular.");
+
+            // pivot within b
+            for (int j = i + 1; j < N; j++)
+                b.data[j][0] -= b.data[i][0] * A.data[j][i] / A.data[i][i];
+
+            // pivot within A
+            for (int j = i + 1; j < N; j++) {
+                double m = A.data[j][i] / A.data[i][i];
+                for (int k = i+1; k < N; k++) {
+                    A.data[j][k] -= A.data[i][k] * m;
+                }
+                A.data[j][i] = 0.0f;
+            }
+        }
+
+        // back substitution
+        Matrix x = new Matrix(N, 1);
+        for (int j = N - 1; j >= 0; j--) {
+            float t = 0.0f;
+            for (int k = j + 1; k < N; k++)
+                t += A.data[j][k] * x.data[k][0];
+            x.data[j][0] = (b.data[j][0] - t) / A.data[j][j];
+        }
+        return x;
+    }
 
 }
   public void settings() {  size(700, 700);  smooth(); }

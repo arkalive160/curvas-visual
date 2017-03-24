@@ -21,7 +21,7 @@ boolean drawGrid = true, drawCtrl = true;
 void setup() {
   size(700, 700);
   textSize(20);
-  poly = new ControlPolygon(2);
+  poly = new ControlPolygon(6);
   tangents = new ControlTangent(poly.points);
 
   smooth();
