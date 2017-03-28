@@ -14,6 +14,7 @@ int mode;
 
 ControlPolygon poly;
 ControlPoint grabber;
+ControlPolygon aux;
 TangentPoint tangentGrabber;
 ControlTangent tangents;
 boolean drawGrid = true, drawCtrl = true;
@@ -23,6 +24,7 @@ void setup() {
   textSize(20);
   poly = new ControlPolygon(7);
   tangents = new ControlTangent(poly.points);
+  aux = new ControlPolygon(7);
 
   smooth();
 }
@@ -56,6 +58,11 @@ void draw() {
 
 
   switch(mode) {
+
+  case 0:
+    NaturalCubic naturalc = new NaturalCubic(poly.points, aux.points);
+    naturalc.calculateDerivates();
+  break;
   case 1:
     Catmull catmull = new Catmull(poly.points, tangents.tPoints);
     catmull.drawCatmullCurve();
