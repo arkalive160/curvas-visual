@@ -2,6 +2,7 @@ class BezierCurve{
   ArrayList<ControlPoint> points;
   int SEGMENT_COUNT = 50;
   float t = 0;
+
   BezierCurve (ArrayList<ControlPoint> thePoints){
 
       this.points = thePoints;

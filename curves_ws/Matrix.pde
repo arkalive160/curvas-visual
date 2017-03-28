@@ -1,6 +1,6 @@
 /*
 Codigo original tomado de : http://introcs.cs.princeton.edu/java/95linear/Matrix.java.html
-Copyright © 2000–2011, Robert Sedgewick and Kevin Wayne. 
+Copyright © 2000–2011, Robert Sedgewick and Kevin Wayne.
 Last updated: Tue Aug 30 09:58:33 EDT 2016.
 */
 
@@ -12,9 +12,9 @@ Last updated: Tue Aug 30 09:58:33 EDT 2016.
  *  A bare-bones immutable data type for M-by-N matrices.
  *
  ******************************************************************************/
- 
+
 class Matrix {
-  
+
     int M;             // number of rows
     int N;             // number of columns
     float[][] data;   // M-by-N array

@@ -37,7 +37,7 @@ boolean drawGrid = true, drawCtrl = true;
 public void setup() {
   
   textSize(20);
-  poly = new ControlPolygon(6);
+  poly = new ControlPolygon(7);
   tangents = new ControlTangent(poly.points);
 
   
@@ -66,14 +66,21 @@ public void draw() {
     drawGrid(10);
   if (drawCtrl){
     poly.draw();
-    tangents.draw();
     //curve.drawTangentLine();
   }
 
-  HermiteCurve hermite = new HermiteCurve(poly.points, tangents.tPoints);
-  hermite.drawHermiteCurve();
+
 
   switch(mode) {
+  case 1:
+    Catmull catmull = new Catmull(poly.points, tangents.tPoints);
+    catmull.drawCatmullCurve();
+  break;
+  case 2:
+    tangents.draw();
+    HermiteCurve hermite = new HermiteCurve(poly.points, tangents.tPoints);
+    hermite.drawHermiteCurve();
+    break;
   case 3:
     BezierCurveGrade6 curve6 = new BezierCurveGrade6(poly.points);
     curve6.drawBezierCurve();
@@ -83,9 +90,8 @@ public void draw() {
     curve.drawBezierCurve(0);
     curve.drawBezierCurve(3);
     break;
-  case 2:
 
-    break;
+
 
   }
 
@@ -155,6 +161,7 @@ class BezierCurve{
   ArrayList<ControlPoint> points;
   int SEGMENT_COUNT = 50;
   float t = 0;
+
   BezierCurve (ArrayList<ControlPoint> thePoints){
 
       this.points = thePoints;
@@ -260,6 +267,64 @@ class BezierCurveGrade6{
     points.get(3).position.set(xm,ym);
 
   }
+
+}
+class Catmull {
+
+ArrayList<ControlPoint> cPoints;
+ArrayList<TangentPoint> tPoints;
+int SEGMENT_COUNT = 50;
+float t = 0;
+
+  Catmull (ArrayList<ControlPoint> cPoints, ArrayList<TangentPoint> tPoints){
+      this.tPoints = tPoints;
+      this.cPoints = cPoints;
+  }
+
+  public PVector calculateHermitePoint(float t,PVector p0, PVector p1, PVector m0, PVector m1){
+      float u = 1 - t;
+
+      PVector firstTerm = PVector.mult( p0, 2*pow(t,3) - 3*pow(t,2) + 1);
+      PVector secondTerm = firstTerm.add(PVector.mult( p1, -2*pow(t,3) + 3*pow(t,2) ));
+      PVector thirdTerm = secondTerm.add(PVector.mult( m0, pow(t,3) - 2*pow(t,2) + t ));
+      PVector fourthTerm = thirdTerm.add(PVector.mult( m1, pow(t,3) - pow(t,2) ));
+      return fourthTerm;
+
+  }
+
+  public void drawCatmullCurve(){
+
+
+
+    for(int i=0; i < cPoints.size() -1; i++){
+
+      PVector current = cPoints.get(i).position;
+      PVector next = cPoints.get(i+1).position;
+      PVector tangent_current = i == 0? current :
+      PVector.mult( PVector.sub(next, cPoints.get(i-1).position), 0.5f );
+      //  PVector tangent_next = PVector.mult( PVector.sub( cPoints.get(i+2).position, current ), 0.5 );
+      PVector tangent_next = i == cPoints.size()-2? next:
+      PVector.mult( PVector.sub( cPoints.get(i+2).position, current ), 0.5f ) ;
+
+
+
+
+        PVector q0 = calculateHermitePoint(0, current, next, tangent_current, tangent_next);
+        int stepts;
+        for(stepts = 0; stepts<= SEGMENT_COUNT; stepts++ ){
+          float t = stepts / (float) SEGMENT_COUNT;
+          PVector q1 = calculateHermitePoint(t, current, next,  tangent_current, tangent_next);
+          stroke(0);
+          strokeWeight(4);
+          line(q0.x, q0.y, q1.x, q1.y);
+          q0=q1;
+
+        }
+    }
+
+
+  }
+
 
 }
 class ControlPoint {
@@ -436,7 +501,7 @@ float t = 0;
 }
 /*
 Codigo original tomado de : http://introcs.cs.princeton.edu/java/95linear/Matrix.java.html
-Copyright \u00a9 2000\u20132011, Robert Sedgewick and Kevin Wayne. 
+Copyright \u00a9 2000\u20132011, Robert Sedgewick and Kevin Wayne.
 Last updated: Tue Aug 30 09:58:33 EDT 2016.
 */
 
@@ -448,9 +513,9 @@ Last updated: Tue Aug 30 09:58:33 EDT 2016.
  *  A bare-bones immutable data type for M-by-N matrices.
  *
  ******************************************************************************/
- 
+
 class Matrix {
-  
+
     int M;             // number of rows
     int N;             // number of columns
     float[][] data;   // M-by-N array

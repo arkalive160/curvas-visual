@@ -21,7 +21,7 @@ boolean drawGrid = true, drawCtrl = true;
 void setup() {
   size(700, 700);
   textSize(20);
-  poly = new ControlPolygon(6);
+  poly = new ControlPolygon(7);
   tangents = new ControlTangent(poly.points);
 
   smooth();
@@ -50,14 +50,21 @@ void draw() {
     drawGrid(10);
   if (drawCtrl){
     poly.draw();
-    tangents.draw();
     //curve.drawTangentLine();
   }
 
-  HermiteCurve hermite = new HermiteCurve(poly.points, tangents.tPoints);
-  hermite.drawHermiteCurve();
+
 
   switch(mode) {
+  case 1:
+    Catmull catmull = new Catmull(poly.points, tangents.tPoints);
+    catmull.drawCatmullCurve();
+  break;
+  case 2:
+    tangents.draw();
+    HermiteCurve hermite = new HermiteCurve(poly.points, tangents.tPoints);
+    hermite.drawHermiteCurve();
+    break;
   case 3:
     BezierCurveGrade6 curve6 = new BezierCurveGrade6(poly.points);
     curve6.drawBezierCurve();
@@ -67,9 +74,8 @@ void draw() {
     curve.drawBezierCurve(0);
     curve.drawBezierCurve(3);
     break;
-  case 2:
 
-    break;
+
 
   }
 
