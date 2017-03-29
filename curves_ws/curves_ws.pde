@@ -6,9 +6,29 @@ int mode;
 /*
  Completar la información para cada curva implementada
 
- Curva 1: <nombre>
- Implementado desde cero, adaptado o transcripción literal: Transcripción literal
- del código encontrado acá: <url>
+ Curva 0: <Cubica Natural>
+ Matrix.pde codigo de terceros proveeido por el monitor de la materia
+ curva cubica naural implementada en colaboracion con sebastian morales garzon
+ https://www.math.ntnu.no/emner/TMA4215/2008h/cubicsplines.pdf
+
+ Curva 1: <Hermite>
+ implementada desde 0 basada en bezier6, en colaboracion con sebastian morales garzon
+ https://en.wikipedia.org/wiki/Cubic_Hermite_spline
+
+Curva 2: <Catmull-Rom>
+Implementacion desde 0 basada en Hermite, en colaboracion con sebastian morales garzon
+https://en.wikipedia.org/wiki/Cubic_Hermite_spline
+
+Curva 4 <Bezier grado 6>
+Implementacion desde 0 basada en Bezier Cubica, en colaboracion con sebastian morales garzon
+https://en.wikipedia.org/wiki/B%C3%A9zier_curve
+
+Curva 5: <Bezier Cubica>
+Implementacion basada en codigo C# de la pagina http://devmag.org.za/2011/04/05/bzier-curves-a-tutorial/
+https://en.wikipedia.org/wiki/B%C3%A9zier_curve
+
+
+
 */
 
 
